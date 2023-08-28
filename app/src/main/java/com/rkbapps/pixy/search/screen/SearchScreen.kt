@@ -118,20 +118,16 @@ fun SearchBar(
     focus: MutableState<Boolean>,
     onSearch: (query: String) -> Unit,
 ) {
-    val containerColor = FilledTextFieldTokens.ContainerColor.toColor()
     TextField(
         value = searchQuery.value,
         onValueChange = {
             searchQuery.value = it
         },
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = containerColor,
-            unfocusedContainerColor = containerColor,
-            disabledContainerColor = containerColor,
+        colors = TextFieldDefaults.textFieldColors(
             cursorColor = Color.Black,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
             disabledLabelColor = lightBlue,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
         ),
         placeholder = {
             Text(text = "Search here")
