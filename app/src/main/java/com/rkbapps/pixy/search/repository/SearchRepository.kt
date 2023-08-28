@@ -37,6 +37,6 @@ class SearchRepository @Inject constructor(private val api: UnsplashAPI) {
         ) {
             SearchPagingSource(this, query)
         }.flow
-        return searchResult;
+        return searchResult
     }
 }

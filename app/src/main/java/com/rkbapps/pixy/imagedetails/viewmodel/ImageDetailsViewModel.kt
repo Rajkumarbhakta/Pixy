@@ -19,11 +19,33 @@ class ImageDetailsViewModel @Inject constructor(
     val photo: StateFlow<Photo>
         get() = repository.photo
 
+    val isFav: StateFlow<Boolean>
+        get() = repository.isFav
+
 
     init {
         viewModelScope.launch {
             val id = saveStateHandel.get<String>("id")
             repository.loadAPhoto(id ?: "")
+            repository.checkIsFavorite(id ?: "")
+        }
+    }
+
+    fun addToFav(photo: Photo) {
+        viewModelScope.launch {
+            repository.addToFav(photo)
+        }
+    }
+
+    fun removeFromFav(id: String) {
+        viewModelScope.launch {
+            repository.removeFromFav(id)
+        }
+    }
+
+    fun changeIsFav() {
+        viewModelScope.launch {
+            repository.changeIsFav()
         }
     }
 }

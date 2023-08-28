@@ -12,10 +12,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.rkbapps.pixy.categories.screen.CategoriesScreen
 import com.rkbapps.pixy.collectiondetails.screen.CollectionDetailsScreen
+import com.rkbapps.pixy.fav.screen.FavScreen
 import com.rkbapps.pixy.home.screen.HomeScreen
 import com.rkbapps.pixy.imagedetails.screen.ImageDetailsScreen
 import com.rkbapps.pixy.profile.screens.ProfileScreen
-import com.rkbapps.pixy.screens.FavScreen
 import com.rkbapps.pixy.search.screen.SearchScreen
 import com.rkbapps.pixy.topicdetails.screen.TopicDetailsScreen
 
@@ -43,7 +43,7 @@ fun BottomNavigationNavGraph(
         }
         composable(route = BottomNavigationItem.Fav.route) {
             appBarTitle.value = "Fav"
-            FavScreen()
+            FavScreen(navController = navController)
         }
         composable(route = BottomNavigationItem.Categories.route) {
             appBarTitle.value = "Categories"

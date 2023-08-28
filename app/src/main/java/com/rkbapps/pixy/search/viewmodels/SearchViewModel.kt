@@ -1,6 +1,5 @@
 package com.rkbapps.pixy.search.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData

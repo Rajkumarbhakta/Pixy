@@ -49,6 +49,7 @@ import com.rkbapps.pixy.utils.getColor
 fun ImageDetailsScreen() {
     val viewModel: ImageDetailsViewModel = hiltViewModel()
     val photo: State<Photo> = viewModel.photo.collectAsState()
+    val isFav: State<Boolean> = viewModel.isFav.collectAsState()
     val context = LocalContext.current
 
     if (photo.value.urls.full.isNotEmpty()) {
@@ -96,11 +97,16 @@ fun ImageDetailsScreen() {
                 ) {
                     ActionIcons(
                         icon = R.drawable.heartlovelike,
+                        tint = if (isFav.value) Color.Red else MaterialTheme.colorScheme.onSecondary,
                         title = "Likes",
                         count = photo.value.likes
                     ) {
-
-
+                        if (isFav.value) {
+                            viewModel.removeFromFav(photo.value.id)
+                        } else {
+                            viewModel.addToFav(photo.value)
+                        }
+                        viewModel.changeIsFav()
                     }
 
                     ActionIcons(
@@ -169,7 +175,13 @@ fun BottomBar(item: Photo) {
 }
 
 @Composable
-fun ActionIcons(icon: Int, title: String, count: Int, onClick: () -> Unit) {
+fun ActionIcons(
+    icon: Int,
+    tint: Color = MaterialTheme.colorScheme.onSecondary,
+    title: String,
+    count: Int,
+    onClick: () -> Unit,
+) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -189,7 +201,7 @@ fun ActionIcons(icon: Int, title: String, count: Int, onClick: () -> Unit) {
                 contentDescription = title,
                 modifier = Modifier.align(
                     Alignment.Center
-                ), tint = MaterialTheme.colorScheme.onSecondary
+                ), tint = tint
             )
         }
         Text(text = "$count")
