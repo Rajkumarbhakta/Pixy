@@ -77,6 +77,8 @@ dependencies {
     //coil
     implementation("io.coil-kt:coil:2.4.0")
     implementation("io.coil-kt:coil-compose:2.4.0")
+    //glide
+    implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
     //hilt
     implementation "com.google.dagger:hilt-android:2.48.1"
     kapt "com.google.dagger:hilt-compiler:2.48.1"
@@ -105,6 +107,8 @@ dependencies {
     implementation "com.airbnb.android:lottie-compose:6.1.0"
     //blur
     implementation "com.github.skydoves:cloudy:0.1.2"
+    //volley
+    implementation("com.android.volley:volley:1.2.1")
 }
 // Allow references to generated code
 kapt {

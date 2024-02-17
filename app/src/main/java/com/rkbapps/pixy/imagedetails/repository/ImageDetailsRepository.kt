@@ -1,10 +1,23 @@
 package com.rkbapps.pixy.imagedetails.repository
 
 
+import android.content.Context
+import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import com.android.volley.Request
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
+import com.google.gson.Gson
 import com.rkbapps.pixy.api.UnsplashAPI
 import com.rkbapps.pixy.db.ImageDao
 import com.rkbapps.pixy.db.ImageEntity
+import com.rkbapps.pixy.imagedetails.models.DownloadLink
 import com.rkbapps.pixy.imagedetails.models.Photo
+import com.rkbapps.pixy.utils.ApiData
+import com.rkbapps.pixy.utils.downloadService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
@@ -59,6 +72,43 @@ class ImageDetailsRepository @Inject constructor(
 
     suspend fun changeIsFav() {
         _isFav.emit(!_isFav.value)
+    }
+
+
+    private val _downloadStatus: MutableState<String> = mutableStateOf("")
+    val downloadStatus: State<String> = _downloadStatus
+    fun trackDownload(context: Context, photo: Photo) {
+        _downloadStatus.value = "Loading.."
+        val queue = Volley.newRequestQueue(context)
+        val stringRequest =object :StringRequest(
+            Request.Method.GET,
+            photo.links.download_location,
+            { response ->
+                //Log.d("DOWNLOAD_RESPONSE",response.toString())
+                try {
+                    val gson = Gson()
+                    val downloadUrl = gson.fromJson(response.toString(), DownloadLink::class.java)
+                    context.downloadService(
+                        photo.alt_description ?: "pixy image",
+                        downloadUrl.url
+                    )
+                    _downloadStatus.value = "Download started."
+                } catch (e: Exception) {
+                    _downloadStatus.value = "Error : ${e.localizedMessage}"
+                }
+            },
+            {
+                _downloadStatus.value = "Error : ${it.localizedMessage}"
+            }
+        ){
+            override fun getHeaders(): MutableMap<String, String> {
+                return mutableMapOf<String,String>(
+                    "Authorization" to "Client-ID ${ApiData.ACCESS_KEY}"
+                )
+            }
+        }
+
+        queue.add(stringRequest)
     }
 
 

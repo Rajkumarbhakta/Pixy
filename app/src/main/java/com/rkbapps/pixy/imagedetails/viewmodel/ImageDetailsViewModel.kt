@@ -1,5 +1,7 @@
 package com.rkbapps.pixy.imagedetails.viewmodel
 
+import android.content.Context
+import androidx.compose.runtime.State
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -47,5 +49,11 @@ class ImageDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             repository.changeIsFav()
         }
+    }
+
+    val downloadStatus: State<String> = repository.downloadStatus
+
+    fun trackDownload(context: Context, photo: Photo){
+        repository.trackDownload(context, photo)
     }
 }

@@ -2,6 +2,7 @@ package com.rkbapps.pixy.home.screen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -29,6 +30,7 @@ import com.rkbapps.pixy.R
 import com.rkbapps.pixy.home.models.PhotosItem
 import com.rkbapps.pixy.home.viewmodel.HomeViewModel
 import com.rkbapps.pixy.navigation.NavigationRoute
+import com.rkbapps.pixy.screens.LoadingError
 import com.rkbapps.pixy.screens.NoInternet
 import com.rkbapps.pixy.utils.checkNetwork
 
@@ -37,54 +39,61 @@ import com.rkbapps.pixy.utils.checkNetwork
 fun HomeScreen(navController: NavController) {
     if (LocalContext.current.checkNetwork()) {
         val homeViewModel: HomeViewModel = hiltViewModel()
-        //val photos: State<List<PhotosItem>> = homeViewModel.photos.collectAsState()
         val photos: LazyPagingItems<PhotosItem> = homeViewModel.photoList.collectAsLazyPagingItems()
+
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(2),
             modifier = Modifier.fillMaxSize(),
         ) {
-            items(
-                count = photos.itemCount,
-//                key = {
-//                    photos[it]?.id ?
-//                }
-            ) { index ->
+
+            items(photos.itemCount) { index ->
                 photos[index]?.let {
                     ImageItem(photosItem = it) {
                         navController.navigate(NavigationRoute.ImageDetails.route + "/${it.id}")
                     }
                 }
             }
-            when (photos.loadState.refresh) {
-                is LoadState.Loading -> {
-                    item {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            CircularProgressIndicator()
-                        }
-                    }
-                }
-
-                is LoadState.NotLoading -> Unit
-                is LoadState.Error -> {}
-            }
 
             when (photos.loadState.append) {
                 is LoadState.Loading -> {
                     item {
-//                    Box(contentAlignment = Alignment.Center,modifier = Modifier.fillMaxSize()) {
-//                        CircularProgressIndicator()
-//                    }
+//                        Box(
+//                            contentAlignment = Alignment.Center,
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .padding(vertical = 8.dp, horizontal = 16.dp)
+//                        ) {
+//                            CircularProgressIndicator()
+//                        }
                     }
                 }
 
                 is LoadState.NotLoading -> Unit
-                is LoadState.Error -> {}
+                is LoadState.Error -> {
+
+
+
+                }
+            }
+        }
+
+        when (photos.loadState.refresh) {
+            is LoadState.Loading -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    CircularProgressIndicator()
+                }
             }
 
+            is LoadState.NotLoading -> Unit
+            is LoadState.Error -> {
+            LoadingError()
+            }
         }
+
+
     } else {
         NoInternet()
     }

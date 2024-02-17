@@ -2,6 +2,7 @@ package com.rkbapps.pixy.imagedetails.screen
 
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,12 +23,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
@@ -39,18 +42,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.bumptech.glide.integration.compose.CrossFade
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.placeholder
 import com.rkbapps.pixy.R
 import com.rkbapps.pixy.imagedetails.models.Photo
 import com.rkbapps.pixy.imagedetails.viewmodel.ImageDetailsViewModel
-import com.rkbapps.pixy.utils.downloadService
 import com.rkbapps.pixy.utils.getColor
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ImageDetailsScreen() {
     val viewModel: ImageDetailsViewModel = hiltViewModel()
     val photo: State<Photo> = viewModel.photo.collectAsState()
     val isFav: State<Boolean> = viewModel.isFav.collectAsState()
     val context = LocalContext.current
+
+    val downloadStatus = remember {
+        viewModel.downloadStatus
+    }
 
     if (photo.value.urls.full.isNotEmpty()) {
         Scaffold(topBar = {
@@ -76,16 +87,25 @@ fun ImageDetailsScreen() {
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                AsyncImage(
+//                AsyncImage(
+//                    model = photo.value.urls.regular,
+//                    contentDescription = photo.value.alt_description,
+//                    //placeholder = painterResource(id = R.drawable.placeholder),
+//                    modifier = Modifier
+//                        .fillMaxSize(),
+//                    //contentScale = ContentScale.Inside,
+//                    onLoading = {
+////                       CircularProgressIndicator( strokeWidth = 2.dp )
+//                    }
+//                )
+
+                GlideImage(
                     model = photo.value.urls.regular,
                     contentDescription = photo.value.alt_description,
-                    placeholder = painterResource(id = R.drawable.placeholder),
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    //contentScale = ContentScale.Inside,
-                    onLoading = {
-                        //CircularProgressIndicator()
-                    }
+                    loading = placeholder(painter = painterResource(id = R.drawable.placeholder)),
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Fit,
+                    transition = CrossFade,
                 )
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -93,7 +113,7 @@ fun ImageDetailsScreen() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.BottomStart)
-                        .padding(5.dp)
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
                     ActionIcons(
                         icon = R.drawable.heartlovelike,
@@ -114,10 +134,14 @@ fun ImageDetailsScreen() {
                         title = "Download",
                         count = photo.value.downloads
                     ) {
-                        context.downloadService(
-                            photo.value.alt_description ?: "pixy image",
-                            photo.value.urls.raw
-                        )
+//                        context.downloadService(
+//                            photo.value.alt_description ?: "pixy image",
+//                            photo.value.urls.raw
+//                        )
+
+                        viewModel.trackDownload(context, photo.value)
+                        Toast.makeText(context, downloadStatus.value, Toast.LENGTH_SHORT).show()
+
                     }
                 }
 
@@ -177,7 +201,7 @@ fun BottomBar(item: Photo) {
 @Composable
 fun ActionIcons(
     icon: Int,
-    tint: Color = MaterialTheme.colorScheme.onSecondary,
+    tint: Color = Color.White,
     title: String,
     count: Int,
     onClick: () -> Unit,
@@ -190,18 +214,18 @@ fun ActionIcons(
             modifier = Modifier
                 .height(50.dp)
                 .width(50.dp)
+                .fillMaxWidth()
                 .clip(shape = CircleShape)
-                .background(color = MaterialTheme.colorScheme.secondary)
+                .background(color = Color(0x501E3187))
                 .clickable {
                     onClick()
-                }
+                },
+            contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(icon),
                 contentDescription = title,
-                modifier = Modifier.align(
-                    Alignment.Center
-                ), tint = tint
+                tint = tint
             )
         }
         Text(text = "$count")
