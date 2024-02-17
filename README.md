@@ -38,6 +38,7 @@ set them in ```~/apikey.properties``` to access the API.
 ```
 ACCESS_KEY = 'Your Access Key'
 SECRET_KEY = 'Your Secret Key'
+APPLICATION_ID = 'Your Application Id'
 ```
 
 ## Screenshots

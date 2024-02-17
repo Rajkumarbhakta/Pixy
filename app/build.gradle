@@ -22,6 +22,7 @@ android {
 
         buildConfigField("String", "ACCESS_KEY", apikeyProperties['ACCESS_KEY'])
         buildConfigField("String", "SECRET_KEY", apikeyProperties['SECRET_KEY'])
+        buildConfigField("String", "APPLICATION_ID", apikeyProperties['APPLICATION_ID'])
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
