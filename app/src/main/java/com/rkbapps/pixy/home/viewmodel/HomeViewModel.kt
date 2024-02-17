@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
+import androidx.paging.liveData
 import com.rkbapps.pixy.home.models.PhotosItem
 import com.rkbapps.pixy.home.paging.HomePagingSource
 import com.rkbapps.pixy.home.repository.HomeRepository
@@ -30,4 +31,13 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
     ) {
         HomePagingSource(repository)
     }.flow.cachedIn(viewModelScope)
+
+    //flow.cachedIn(viewModelScope)
+
+        //.liveData.cachedIn(viewModelScope)
+
+
+
+
+
 }

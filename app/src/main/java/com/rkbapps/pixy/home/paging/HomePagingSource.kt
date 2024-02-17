@@ -28,6 +28,4 @@ class HomePagingSource @Inject constructor(private val repository: HomeRepositor
             LoadResult.Error(e)
         }
     }
-
-
 }

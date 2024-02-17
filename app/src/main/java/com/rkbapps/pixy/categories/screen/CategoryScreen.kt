@@ -2,6 +2,7 @@ package com.rkbapps.pixy.categories.screen
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,6 +11,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PageSize
+import androidx.compose.foundation.pager.PagerDefaults
+import androidx.compose.foundation.pager.PagerScope
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.CardDefaults
@@ -22,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -106,13 +111,18 @@ fun CategoriesScreen(navController: NavHostController) {
 @Composable
 fun CarouselTopic(topics: State<List<Topic>>, onItemClicked: (topic: Topic) -> Unit) {
     val pageCount = topics.value.size
-    val pagerState: PagerState = rememberPagerState(initialPage = 0)
+    val pagerState: PagerState = rememberPagerState(
+        initialPage = 0,
+        initialPageOffsetFraction = 0f
+    ) {
+        pageCount
+    }
     val isDragged by pagerState.interactionSource.collectIsDraggedAsState()
     if (isDragged.not()) {
         with(pagerState) {
             if (pageCount > 0) {
                 var currentPageKey by rememberSaveable {
-                    mutableStateOf(0)
+                    mutableIntStateOf(0)
                 }
                 LaunchedEffect(key1 = currentPageKey) {
                     launch {
@@ -129,25 +139,35 @@ fun CarouselTopic(topics: State<List<Topic>>, onItemClicked: (topic: Topic) -> U
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box {
             HorizontalPager(
-                pageCount = pageCount,
+                modifier = Modifier,
                 state = pagerState,
+                pageSpacing = 16.dp,
+                userScrollEnabled = true,
+                reverseLayout = false,
                 contentPadding = PaddingValues(
                     horizontal = 32.dp
                 ),
-                pageSpacing = 16.dp
-            ) { page: Int ->
-                val item: Topic = topics.value[page]
-                item.let {
-                    ElevatedCard(
-                        elevation = CardDefaults.elevatedCardElevation(10.dp),
-                        onClick = { onItemClicked(it) },
-                        modifier = Modifier
-                            .carouselTransition(page, pagerState)
-                    ) {
-                        CarouselItem(it)
+                beyondBoundsPageCount = 0,
+                pageSize = PageSize.Fill,
+                flingBehavior = PagerDefaults.flingBehavior(state = pagerState),
+                key = null,
+                pageNestedScrollConnection = PagerDefaults.pageNestedScrollConnection(
+                    Orientation.Horizontal
+                ),
+                pageContent =  {page->
+                    val item: Topic = topics.value[page]
+                    item.let {
+                        ElevatedCard(
+                            elevation = CardDefaults.elevatedCardElevation(10.dp),
+                            onClick = { onItemClicked(it) },
+                            modifier = Modifier
+                                .carouselTransition(page, pagerState)
+                        ) {
+                            CarouselItem(it)
+                        }
                     }
                 }
-            }
+            )
         }
 //        if (carouselLabel.isNotBlank()) {
 //            Text(text = carouselLabel, style = MaterialTheme.typography.labelSmall)

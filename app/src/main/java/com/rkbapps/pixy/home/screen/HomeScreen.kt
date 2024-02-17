@@ -1,6 +1,5 @@
 package com.rkbapps.pixy.home.screen
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -33,7 +32,7 @@ import com.rkbapps.pixy.navigation.NavigationRoute
 import com.rkbapps.pixy.screens.NoInternet
 import com.rkbapps.pixy.utils.checkNetwork
 
-@OptIn(ExperimentalFoundationApi::class)
+
 @Composable
 fun HomeScreen(navController: NavController) {
     if (LocalContext.current.checkNetwork()) {
@@ -42,8 +41,14 @@ fun HomeScreen(navController: NavController) {
         val photos: LazyPagingItems<PhotosItem> = homeViewModel.photoList.collectAsLazyPagingItems()
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(2),
+            modifier = Modifier.fillMaxSize(),
         ) {
-            items(photos.itemCount) { index ->
+            items(
+                count = photos.itemCount,
+//                key = {
+//                    photos[it]?.id ?
+//                }
+            ) { index ->
                 photos[index]?.let {
                     ImageItem(photosItem = it) {
                         navController.navigate(NavigationRoute.ImageDetails.route + "/${it.id}")
