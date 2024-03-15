@@ -4,6 +4,7 @@ import com.rkbapps.pixy.db.ImageDao
 import com.rkbapps.pixy.db.ImageEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.emitAll
 import javax.inject.Inject
 
 class FavScreenRepository @Inject constructor(private val imageDao: ImageDao) {
@@ -15,6 +16,6 @@ class FavScreenRepository @Inject constructor(private val imageDao: ImageDao) {
 
     suspend fun getAllFavImages() {
         val images = imageDao.getAllImages()
-        _favImages.emit(images)
+        _favImages.emitAll(images)
     }
 }

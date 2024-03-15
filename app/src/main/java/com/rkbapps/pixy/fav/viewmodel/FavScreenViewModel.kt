@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.rkbapps.pixy.db.ImageEntity
 import com.rkbapps.pixy.fav.repository.FavScreenRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,7 +18,7 @@ class FavScreenViewModel @Inject constructor(private val repository: FavScreenRe
         get() = repository.favImages
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.getAllFavImages()
         }
     }

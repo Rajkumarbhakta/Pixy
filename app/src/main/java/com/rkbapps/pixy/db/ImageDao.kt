@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ImageDao {
@@ -12,10 +13,10 @@ interface ImageDao {
     suspend fun addNewImage(imageEntity: ImageEntity)
 
     @Query("select * from images where id=:id")
-    fun getImageById(id: String): ImageEntity
+    suspend fun getImageById(id: String): ImageEntity
 
     @Query("select * from images where slug=:slug")
-    fun getImageBySlug(slug: String): ImageEntity
+    suspend fun getImageBySlug(slug: String): ImageEntity
 
     @Delete
     suspend fun deleteImage(imageEntity: ImageEntity)
@@ -27,7 +28,7 @@ interface ImageDao {
     suspend fun deleteImageBySlug(slug: String)
 
     @Query("select * from images")
-    fun getAllImages(): List<ImageEntity>
+    fun getAllImages(): Flow<List<ImageEntity>>
 
     @Query("select exists(select * from images where id=:id)")
     suspend fun isExists(id: String): Boolean

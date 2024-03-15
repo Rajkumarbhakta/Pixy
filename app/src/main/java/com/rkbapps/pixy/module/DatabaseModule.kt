@@ -27,8 +27,7 @@ class DatabaseModule {
             context.applicationContext,
             ImageDatabase::class.java,
             "images"
-        ).fallbackToDestructiveMigration()
-            .allowMainThreadQueries()
+        )
             .build()
     }
 

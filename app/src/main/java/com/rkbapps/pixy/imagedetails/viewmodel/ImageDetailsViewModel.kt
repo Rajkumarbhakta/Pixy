@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.rkbapps.pixy.imagedetails.models.Photo
 import com.rkbapps.pixy.imagedetails.repository.ImageDetailsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,7 +27,7 @@ class ImageDetailsViewModel @Inject constructor(
 
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val id = saveStateHandel.get<String>("id")
             repository.loadAPhoto(id ?: "")
             repository.checkIsFavorite(id ?: "")
@@ -34,19 +35,19 @@ class ImageDetailsViewModel @Inject constructor(
     }
 
     fun addToFav(photo: Photo) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.addToFav(photo)
         }
     }
 
     fun removeFromFav(id: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.removeFromFav(id)
         }
     }
 
     fun changeIsFav() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.changeIsFav()
         }
     }
